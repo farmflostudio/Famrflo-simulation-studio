@@ -4,6 +4,10 @@ import cors from "cors";
 import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 import authRoutes from "./routes/authRoutes.js";
+import farmRoutes from "./routes/farmRoutes.js";
+import simulationRoutes from "./routes/simulationRoutes.js";
+import predictionRoutes from "./routes/predictionRoutes.js";
+import modelRoutes from "./routes/modelRoutes.js";
 
 const app = express();
 
@@ -25,6 +29,10 @@ app.get("/api/health", (req, res) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/farms", farmRoutes);
+app.use("/api/farms/:farmId/simulations", simulationRoutes);
+app.use("/api/farms/:farmId/predictions", predictionRoutes);
+app.use("/api/models", modelRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ error: "Not found" });

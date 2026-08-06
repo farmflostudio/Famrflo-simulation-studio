@@ -8,3 +8,5 @@ requests
 python-dotenv
 joblib
 matplotlib
+fastapi
+uvicorn[standard]
