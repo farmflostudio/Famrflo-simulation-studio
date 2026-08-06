@@ -1,0 +1,19 @@
+[
+  "precip",
+  "air_temp",
+  "relative_humidity",
+  "net_radiation",
+  "latitude",
+  "longitude",
+  "vwc_lag1",
+  "doy_sin",
+  "doy_cos",
+  "soil_type__Calcareous mineral soil",
+  "soil_type__Mineral soil",
+  "soil_type__Organic soil",
+  "land_cover__Acid grassland",
+  "land_cover__Arable and horticulture",
+  "land_cover__Broadleaf woodland",
+  "land_cover__Heather grassland",
+  "land_cover__Improved grassland"
+]

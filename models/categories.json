@@ -1,0 +1,14 @@
+{
+  "soil_type": [
+    "Calcareous mineral soil",
+    "Mineral soil",
+    "Organic soil"
+  ],
+  "land_cover": [
+    "Acid grassland",
+    "Arable and horticulture",
+    "Broadleaf woodland",
+    "Heather grassland",
+    "Improved grassland"
+  ]
+}
