@@ -34,3 +34,6 @@ Thumbs.db
 .vscode/
 .idea/
 .claude/
+
+# Internal planning document, not part of the product
+FarmFlo_Simulation_Studio_Development_Brief.md
