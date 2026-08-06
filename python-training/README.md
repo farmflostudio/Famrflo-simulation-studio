@@ -1,4 +1,4 @@
-# FarmFlo Simulation Studio — Python Training Project
+# FarmFlo Simulation Studio - Python Training Project
 
 Data access, synthetic simulation, and model training for FarmFlo Simulation Studio.
 
