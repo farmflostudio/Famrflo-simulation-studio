@@ -46,6 +46,8 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
+Only run `python -m venv .venv` if the `python-training\.venv` folder doesn't already exist, it's a one time step. Run it from a plain terminal, not one where a venv is already active (the prompt won't start with `(.venv)`), otherwise Windows can't overwrite the interpreter it's currently running. If `.venv` already exists, skip straight to `.venv\Scripts\activate`.
+
 ## Running the app
 
 Three things need to run at the same time, each in its own terminal.
