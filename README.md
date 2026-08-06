@@ -4,10 +4,10 @@ A smart irrigation scheduling platform for virtual UK farms. A user describes a 
 
 The project has three parts, plus one shared folder:
 
-- `frontend` — React dashboard
-- `backend` — Node and Express API, MongoDB
-- `python-training` — data pipeline, simulation engine, model training, and the inference service the backend calls
-- `models` — the trained, ready to use prediction models, already committed, no retraining required
+- `frontend` - React dashboard
+- `backend` - Node and Express API, MongoDB
+- `python-training` - data pipeline, simulation engine, model training, and the inference service the backend calls
+- `models` - the trained, ready to use prediction models, already committed, no retraining required
 
 ## Prerequisites
 
@@ -26,10 +26,10 @@ copy .env.example .env
 
 Open `backend/.env` and fill in:
 
-- `MONGODB_URI` and `MONGODB_DB_NAME` — your database
-- `JWT_SECRET` — any long random string
-- `GEMINI_API_KEY` — only needed for the language layer added in Part Two
-- `SIMULATION_SERVICE_URL` — leave as `http://localhost:8000`
+- `MONGODB_URI` and `MONGODB_DB_NAME` - your database
+- `JWT_SECRET` - any long random string
+- `GEMINI_API_KEY` - only needed for the language layer added in Part Two
+- `SIMULATION_SERVICE_URL` - leave as `http://localhost:8000`
 
 **2. Install each part**
 
