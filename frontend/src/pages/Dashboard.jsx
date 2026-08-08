@@ -95,19 +95,30 @@ export default function Dashboard() {
             <p className="text-sm text-slate-500">{selectedFarm?.location?.label || "Unlabelled location"}</p>
           </div>
 
-          {farms.length > 1 && (
-            <select
-              value={selectedFarmId}
-              onChange={(event) => setSelectedFarmId(event.target.value)}
-              className="rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-            >
-              {farms.map((farm) => (
-                <option key={farm._id} value={farm._id}>
-                  {farm.name}
-                </option>
-              ))}
-            </select>
-          )}
+          <div className="flex items-center gap-3">
+            {farms.length > 1 && (
+              <select
+                value={selectedFarmId}
+                onChange={(event) => setSelectedFarmId(event.target.value)}
+                className="rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              >
+                {farms.map((farm) => (
+                  <option key={farm._id} value={farm._id}>
+                    {farm.name}
+                  </option>
+                ))}
+              </select>
+            )}
+
+            {selectedFarm && (
+              <Link
+                to={`/farms/${selectedFarm._id}/edit`}
+                className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-white"
+              >
+                Edit farm
+              </Link>
+            )}
+          </div>
         </div>
 
         <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-3">
