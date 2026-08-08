@@ -24,6 +24,12 @@ export default function Navbar() {
           <Link to="/dashboard" className="hover:text-slate-900">
             Dashboard
           </Link>
+          <Link to="/schedule" className="hover:text-slate-900">
+            Schedule
+          </Link>
+          <Link to="/history" className="hover:text-slate-900">
+            History
+          </Link>
           <Link to="/farms/new" className="hover:text-slate-900">
             Add farm
           </Link>

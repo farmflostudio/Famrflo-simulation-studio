@@ -1,0 +1,10 @@
+import { Router } from "express";
+import { requireAuth } from "../middleware/auth.js";
+import { getHistory } from "../controllers/historyController.js";
+
+const router = Router();
+
+router.use(requireAuth);
+router.get("/", getHistory);
+
+export default router;
