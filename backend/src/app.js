@@ -7,6 +7,10 @@ import authRoutes from "./routes/authRoutes.js";
 import farmRoutes from "./routes/farmRoutes.js";
 import simulationRoutes from "./routes/simulationRoutes.js";
 import predictionRoutes from "./routes/predictionRoutes.js";
+import scheduleRoutes from "./routes/scheduleRoutes.js";
+import languageRoutes from "./routes/languageRoutes.js";
+import historyRoutes from "./routes/historyRoutes.js";
+import geocodingRoutes from "./routes/geocodingRoutes.js";
 import modelRoutes from "./routes/modelRoutes.js";
 
 const app = express();
@@ -32,6 +36,10 @@ app.use("/api/auth", authRoutes);
 app.use("/api/farms", farmRoutes);
 app.use("/api/farms/:farmId/simulations", simulationRoutes);
 app.use("/api/farms/:farmId/predictions", predictionRoutes);
+app.use("/api/farms/:farmId/schedules", scheduleRoutes);
+app.use("/api/language", languageRoutes);
+app.use("/api/history", historyRoutes);
+app.use("/api/geocode", geocodingRoutes);
 app.use("/api/models", modelRoutes);
 
 app.use((req, res) => {
