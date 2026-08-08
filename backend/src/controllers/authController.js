@@ -1,6 +1,14 @@
+import crypto from "node:crypto";
 import User from "../models/User.js";
 import { hashPassword, comparePassword } from "../utils/password.js";
 import { signToken } from "../utils/jwt.js";
+import { sendPasswordResetEmail } from "../services/emailService.js";
+
+const RESET_TOKEN_TTL_MS = 60 * 60 * 1000;
+
+function hashToken(token) {
+  return crypto.createHash("sha256").update(token).digest("hex");
+}
 
 export async function register(req, res) {
   const { email, password, name } = req.body;
@@ -40,4 +48,51 @@ export async function logout(req, res) {
 
 export async function me(req, res) {
   res.json({ user: req.user });
+}
+
+export async function forgotPassword(req, res) {
+  const { email } = req.body;
+  const user = await User.findOne({ email: email.toLowerCase() });
+
+  // Always respond the same way whether or not the account exists, so this endpoint
+  // can't be used to discover which emails are registered.
+  if (user) {
+    const rawToken = crypto.randomBytes(32).toString("hex");
+    user.resetPasswordTokenHash = hashToken(rawToken);
+    user.resetPasswordExpires = new Date(Date.now() + RESET_TOKEN_TTL_MS);
+    await user.save();
+
+    const resetLink = `${process.env.FRONTEND_URL || "http://localhost:5173"}/reset-password?token=${rawToken}`;
+
+    try {
+      await sendPasswordResetEmail(user.email, resetLink);
+    } catch (err) {
+      // Don't leak email delivery failures to the client - the token is still valid,
+      // and surfacing SMTP errors here would be an information disclosure risk.
+      console.error("Failed to send password reset email:", err.message);
+    }
+  }
+
+  res.json({ message: "If an account exists for that email, a password reset link has been sent" });
+}
+
+export async function resetPassword(req, res) {
+  const { token, password } = req.body;
+  const tokenHash = hashToken(token);
+
+  const user = await User.findOne({
+    resetPasswordTokenHash: tokenHash,
+    resetPasswordExpires: { $gt: new Date() },
+  });
+
+  if (!user) {
+    return res.status(400).json({ error: "That reset link is invalid or has expired" });
+  }
+
+  user.passwordHash = await hashPassword(password);
+  user.resetPasswordTokenHash = null;
+  user.resetPasswordExpires = null;
+  await user.save();
+
+  res.json({ message: "Password reset successfully" });
 }

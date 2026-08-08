@@ -18,6 +18,14 @@ const userSchema = new mongoose.Schema(
       trim: true,
       default: "",
     },
+    resetPasswordTokenHash: {
+      type: String,
+      default: null,
+    },
+    resetPasswordExpires: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true }
 );
@@ -25,6 +33,8 @@ const userSchema = new mongoose.Schema(
 userSchema.set("toJSON", {
   transform: (doc, ret) => {
     delete ret.passwordHash;
+    delete ret.resetPasswordTokenHash;
+    delete ret.resetPasswordExpires;
     delete ret.__v;
     return ret;
   },

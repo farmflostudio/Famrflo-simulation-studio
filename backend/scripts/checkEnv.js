@@ -1,6 +1,17 @@
 import "dotenv/config";
 
-const required = ["MONGODB_URI", "MONGODB_DB_NAME", "JWT_SECRET", "GEMINI_API_KEY"];
+const required = [
+  "MONGODB_URI",
+  "MONGODB_DB_NAME",
+  "JWT_SECRET",
+  "GEMINI_API_KEY",
+  "FRONTEND_URL",
+  "SMTP_HOST",
+  "SMTP_PORT",
+  "SMTP_USER",
+  "SMTP_PASSWORD",
+  "SMTP_FROM",
+];
 
 function mask(value) {
   if (!value) return "(missing)";

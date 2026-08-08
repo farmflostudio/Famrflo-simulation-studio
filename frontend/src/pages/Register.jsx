@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import PasswordInput from "../components/PasswordInput";
 
 export default function Register() {
   const { register } = useAuth();
@@ -64,14 +65,11 @@ export default function Register() {
             <label htmlFor="password" className="block text-sm font-medium text-slate-700">
               Password
             </label>
-            <input
+            <PasswordInput
               id="password"
-              type="password"
               autoComplete="new-password"
-              required
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              className="mt-1 w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
             />
             <p className="mt-1 text-xs text-slate-400">
               At least 8 characters, with a letter and a number.
