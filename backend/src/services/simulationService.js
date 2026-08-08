@@ -46,3 +46,18 @@ export async function runPrediction({ latitude, longitude, soilType, landCover, 
     throw normalizeError(err);
   }
 }
+
+export async function runSchedule({ latitude, longitude, soilType, landCover, horizonDays }) {
+  try {
+    const { data } = await client.post("/schedule", {
+      latitude,
+      longitude,
+      soilType,
+      landCover,
+      horizonDays,
+    });
+    return data;
+  } catch (err) {
+    throw normalizeError(err);
+  }
+}

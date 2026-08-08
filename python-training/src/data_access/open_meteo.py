@@ -4,6 +4,7 @@ import pandas as pd
 import requests
 
 BASE_URL = "https://archive-api.open-meteo.com/v1/archive"
+FORECAST_URL = "https://api.open-meteo.com/v1/forecast"
 CACHE_DIR = Path(__file__).resolve().parents[2] / "data" / "cache" / "open_meteo"
 
 DAILY_VARIABLES = [
@@ -12,6 +13,12 @@ DAILY_VARIABLES = [
     "relative_humidity_2m_mean",
     "shortwave_radiation_sum",
 ]
+
+
+def _rename_daily_columns(df, daily_variables):
+    df["time"] = pd.to_datetime(df["time"]).dt.date
+    df = df.rename(columns={"time": "date"})
+    return df.rename(columns={v: f"om_{v.replace('_2m', '').replace('_mean', '').replace('_sum', '')}" for v in daily_variables})
 
 
 def fetch_daily(latitude, longitude, start, end, daily_variables=DAILY_VARIABLES):
@@ -28,10 +35,23 @@ def fetch_daily(latitude, longitude, start, end, daily_variables=DAILY_VARIABLES
     payload = response.json()["daily"]
 
     df = pd.DataFrame(payload)
-    df["time"] = pd.to_datetime(df["time"]).dt.date
-    df = df.rename(columns={"time": "date"})
-    df = df.rename(columns={v: f"om_{v.replace('_2m', '').replace('_mean', '').replace('_sum', '')}" for v in daily_variables})
-    return df
+    return _rename_daily_columns(df, daily_variables)
+
+
+def fetch_forecast_daily(latitude, longitude, days, daily_variables=DAILY_VARIABLES):
+    params = {
+        "latitude": latitude,
+        "longitude": longitude,
+        "forecast_days": days,
+        "daily": ",".join(daily_variables),
+        "timezone": "UTC",
+    }
+    response = requests.get(FORECAST_URL, params=params, timeout=60)
+    response.raise_for_status()
+    payload = response.json()["daily"]
+
+    df = pd.DataFrame(payload)
+    return _rename_daily_columns(df, daily_variables)
 
 
 def build_cache(site_id, latitude, longitude, start, end, force=False):
