@@ -13,6 +13,7 @@ OUTPUT_PATH = Path(__file__).resolve().parents[2] / "data" / "cache" / "syntheti
 
 VARIANTS_PER_SITE = 6
 PERTURBATION_STD = 0.15
+MIN_FIELD_CAPACITY_WILTING_POINT_GAP = 5.0
 
 
 def perturb_params(base_params, rng):
@@ -22,8 +23,12 @@ def perturb_params(base_params, rng):
         value = base_params[name] * (1.0 + rng.normal(0.0, PERTURBATION_STD))
         perturbed[name] = float(np.clip(value, low, high))
 
-    if perturbed["field_capacity"] <= perturbed["wilting_point"] + 5:
-        perturbed["field_capacity"] = perturbed["wilting_point"] + 5
+    # calibrate.py's objective rejects any candidate with field_capacity <= wilting_point + 5,
+    # so the corrected value must land strictly above that boundary, not exactly on it.
+    min_gap = MIN_FIELD_CAPACITY_WILTING_POINT_GAP
+    if perturbed["field_capacity"] <= perturbed["wilting_point"] + min_gap:
+        high = PARAM_BOUNDS["field_capacity"][1]
+        perturbed["field_capacity"] = min(high, perturbed["wilting_point"] + min_gap + 1e-6)
     return perturbed
 
 

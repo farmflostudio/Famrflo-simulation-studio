@@ -1,3 +1,16 @@
+"""Irrigation scheduling via constrained non-linear optimisation.
+
+`_optimised_schedule` solves a single-shot constrained optimisation problem with SciPy's
+SLSQP: given a weather forecast for the requested horizon, it picks the whole daily irrigation
+vector at once that minimises total water applied subject to a soil-moisture floor constraint
+for every day in the horizon.
+
+This is NOT a receding-horizon Model Predictive Controller. A real MPC re-solves the
+optimisation at every timestep as new observations arrive, applies only the first control
+action, and discards the rest of the plan. Here the schedule is solved once for the full
+horizon and returned in full, with no re-solve loop and no feedback from actual outcomes.
+"""
+
 import numpy as np
 from scipy.optimize import linprog, minimize
 from water_balance import PARAM_NAMES, moisture_stress, simulate_series

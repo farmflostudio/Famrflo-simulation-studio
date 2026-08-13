@@ -78,7 +78,10 @@ def predict(latitude, longitude, soil_type, land_cover, target_date=None):
     predictions = {
         "random_forest": float(store.random_forest.predict(tabular_row)[0]),
         "xgboost": float(store.xgboost.predict(tabular_row)[0]),
-        "lstm": float(store.lstm.predict(sequence, verbose=0)[0][0]),
+        # model.predict() carries large per-call Python/retracing overhead meant for batched
+        # workloads; predict_on_batch() skips that overhead and is ~40x faster for single-sample
+        # inference, which is what pushed p95 latency past the 200ms target (see tests/test_prediction_latency.py).
+        "lstm": float(store.lstm.predict_on_batch(sequence)[0][0]),
     }
 
     return {

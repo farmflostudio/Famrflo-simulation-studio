@@ -19,8 +19,13 @@ def train():
 
     model = RandomForestRegressor(
         n_estimators=150,
-        max_depth=14,
-        min_samples_leaf=5,
+        max_depth=13,
+        min_samples_leaf=10,
+        # vwc_lag1 is such a strong single predictor that every split picks it regardless of
+        # depth/leaf size, driving its impurity importance to ~99.5% (near-pure persistence).
+        # max_features caps how many candidate features each split can consider, so a meaningful
+        # fraction of splits are forced onto the weather/static features instead.
+        max_features=0.5,
         n_jobs=-1,
         random_state=42,
     )

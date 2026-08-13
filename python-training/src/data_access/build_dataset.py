@@ -13,6 +13,10 @@ DATASET_PATH = Path(__file__).resolve().parents[2] / "data" / "cache" / "farmflo
 
 DEFAULT_SITE_COUNT = 10
 
+# Same rough shortwave -> net-radiation multiplier used for Open-Meteo in service/weather.py,
+# applied here only to give an order-of-magnitude comparable series for exploratory analysis.
+NET_RADIATION_APPROX_FACTOR = 0.65
+
 
 def select_sites(locations, count=DEFAULT_SITE_COUNT):
     step = max(len(locations) // count, 1)
@@ -43,8 +47,25 @@ def build(site_count=DEFAULT_SITE_COUNT, start="2018-01-01", force=False):
         power_df["date"] = pd.to_datetime(power_df["date"]).dt.date
         meteo_df["date"] = pd.to_datetime(meteo_df["date"]).dt.date
 
+        # cosmos_rn (COSMOS UK) and power_allsky_sfc_sw_dwn (NASA POWER) are NOT the same
+        # variable and must never be compared or substituted for one another directly:
+        #   - cosmos_rn is measured NET radiation (incoming minus outgoing shortwave AND
+        #     longwave); it can go negative, e.g. on clear nights when outgoing longwave
+        #     loss exceeds incoming shortwave.
+        #   - power_allsky_sfc_sw_dwn is raw DOWNWARD SHORTWAVE radiation only, with no
+        #     outgoing/longwave term subtracted, so it is always >= 0 and runs roughly 2x
+        #     larger than cosmos_rn in this dataset's value range.
+        # Treating them as equivalent (e.g. joining them under one column, or KS-testing one
+        # against the other directly) previously produced the radiation KS-test failure in
+        # data/cache/real_analysis_results.json. They are kept as two separate, clearly named
+        # columns below. power_net_radiation_approx additionally applies the same rough
+        # shortwave -> net-radiation multiplier used for Open-Meteo (service/weather.py) so an
+        # order-of-magnitude comparable series exists, but even that is only an approximation:
+        # it can't reproduce negative nighttime values or account for albedo/land-cover
+        # differences, so it should not be treated as a drop-in replacement for cosmos_rn.
         merged = site_cosmos.merge(power_df.drop(columns=["site_id"]), on="date", how="left")
         merged = merged.merge(meteo_df.drop(columns=["site_id"]), on="date", how="left")
+        merged["power_net_radiation_approx"] = merged["power_allsky_sfc_sw_dwn"] * NET_RADIATION_APPROX_FACTOR
 
         for col in ["latitude", "longitude", "altitude_m", "land_cover", "soil_type"]:
             merged[col] = site[col]
