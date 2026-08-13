@@ -7,6 +7,7 @@ import SchedulePlanTable from "../components/SchedulePlanTable";
 import ExplanationCard from "../components/ExplanationCard";
 import BaselineComparisonTable from "../components/BaselineComparisonTable";
 import api from "../lib/api";
+import { downloadSchedulePdf } from "../lib/schedulePdf";
 
 const HORIZON_OPTIONS = [3, 7, 14];
 
@@ -151,7 +152,17 @@ export default function Schedule() {
 
         {schedule.status === "ready" && schedule.data && (
           <>
-            <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <div className="mt-6 flex justify-end">
+              <button
+                type="button"
+                onClick={() => downloadSchedulePdf({ farm: selectedFarm, schedule: schedule.data })}
+                className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+              >
+                Download PDF
+              </button>
+            </div>
+
+            <div className="mt-4 grid grid-cols-1 gap-6 lg:grid-cols-3">
               <Card
                 title="Recommended irrigation"
                 subtitle={`${schedule.data.horizonDays} day plan, reference site ${schedule.data.referenceSite}`}
