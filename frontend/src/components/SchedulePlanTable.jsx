@@ -21,13 +21,29 @@ export default function SchedulePlanTable({ plan }) {
           </tr>
         </thead>
         <tbody>
-          {plan.map((entry) => (
-            <tr key={entry.date} className="border-b border-slate-100 last:border-0">
-              <td className="py-2 pr-4 text-slate-600">{formatDate(entry.date)}</td>
-              <td className="py-2 pr-4 tabular-nums text-slate-800">{entry.recommendedMm.toFixed(1)} mm</td>
-              <td className="py-2 tabular-nums text-slate-600">{entry.predictedVwc.toFixed(1)}%</td>
-            </tr>
-          ))}
+          {plan.map((entry) => {
+            const isIrrigationDay = entry.recommendedMm > 0.01;
+            return (
+              <tr key={entry.date} className="border-b border-slate-100 last:border-0">
+                <td className="py-2 pr-4 text-slate-600">{formatDate(entry.date)}</td>
+                <td className="py-2 pr-4 tabular-nums text-slate-800">{entry.recommendedMm.toFixed(1)} mm</td>
+                <td className="py-2 tabular-nums text-slate-600">
+                  {isIrrigationDay ? (
+                    <span>
+                      {entry.vwcBeforeIrrigation.toFixed(1)}%
+                      <span className="mx-1 text-slate-400" aria-hidden="true">
+                        →
+                      </span>
+                      <span className="font-medium text-slate-800">{entry.predictedVwc.toFixed(1)}%</span>
+                      <span className="sr-only"> after irrigation</span>
+                    </span>
+                  ) : (
+                    <span>{entry.predictedVwc.toFixed(1)}%</span>
+                  )}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

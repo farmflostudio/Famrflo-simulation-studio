@@ -25,6 +25,7 @@ export async function createSchedule(req, res) {
     soilType: farm.soilType,
     landCover: farm.landCover,
     horizonDays,
+    areaHectares: farm.areaHectares,
   });
 
   const numbers = {
@@ -57,8 +58,12 @@ export async function createSchedule(req, res) {
     horizonDays: result.horizonDays,
     referenceSite: result.referenceSite,
     soilType: result.soilType,
+    landCover: result.landCover,
     fieldCapacity: result.fieldCapacity,
     wiltingPoint: result.wiltingPoint,
+    madThreshold: result.madThreshold,
+    irrigationApplicable: result.irrigationApplicable,
+    policyNote: result.policyNote,
     recommended: result.recommended,
     baselines: result.baselines,
     explanation: explanationResult.explanation,

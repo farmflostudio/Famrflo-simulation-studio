@@ -4,6 +4,7 @@ const planEntrySchema = new mongoose.Schema(
   {
     date: String,
     recommendedMm: Number,
+    vwcBeforeIrrigation: Number,
     predictedVwc: Number,
   },
   { _id: false }
@@ -14,6 +15,7 @@ const strategyResultSchema = new mongoose.Schema(
     strategy: String,
     plan: [planEntrySchema],
     totalWaterMm: Number,
+    totalWaterLitres: Number,
     irrigationDays: Number,
     minVwc: Number,
     daysBelowWiltingPoint: Number,
@@ -36,8 +38,12 @@ const irrigationScheduleSchema = new mongoose.Schema(
     horizonDays: { type: Number, required: true },
     referenceSite: { type: String },
     soilType: { type: String },
+    landCover: { type: String },
     fieldCapacity: { type: Number },
     wiltingPoint: { type: Number },
+    madThreshold: { type: Number },
+    irrigationApplicable: { type: Boolean, default: true },
+    policyNote: { type: String },
     recommended: strategyResultSchema,
     baselines: {
       fixedInterval: strategyResultSchema,
