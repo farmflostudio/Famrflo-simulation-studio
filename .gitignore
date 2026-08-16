@@ -1,1 +1,36 @@
+# Environment files (never commit real credentials)
+.env
+.env.local
+.env.*.local
+*/.env
+*/.env.local
 
+# Node
+node_modules/
+dist/
+build/
+*.log
+npm-debug.log*
+.vite/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Data caches (large/regeneratable, not committed)
+python-training/data/raw/
+python-training/data/cache/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.claude/
