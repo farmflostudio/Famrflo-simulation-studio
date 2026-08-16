@@ -33,19 +33,28 @@ THRESHOLD_STRESS_RATIO = 0.3
 THRESHOLD_AMOUNT_MM = 15.0
 
 
-def _plan_from_trajectory(dates, irrigation, vwc):
+def _plan_from_trajectory(dates, irrigation, vwc, vwc_before):
     return [
-        {"date": str(date), "recommendedMm": round(float(mm), 2), "predictedVwc": round(float(v), 2)}
-        for date, mm, v in zip(dates, irrigation, vwc)
+        {
+            "date": str(date),
+            "recommendedMm": round(float(mm), 2),
+            "vwcBeforeIrrigation": round(float(before), 2),
+            "predictedVwc": round(float(v), 2),
+        }
+        for date, mm, before, v in zip(dates, irrigation, vwc_before, vwc)
     ]
 
 
-def _summarize(strategy, dates, irrigation, vwc, wilting_point):
+def _summarize(strategy, dates, irrigation, vwc, wilting_point, initial_vwc):
     irrigation = np.asarray(irrigation, dtype=float)
     vwc = np.asarray(vwc, dtype=float)
+    # Soil moisture at the start of each day, before that day's irrigation/precip/ET is
+    # applied - i.e. the previous day's ending state, or the trajectory's initial state
+    # for the first day.
+    vwc_before = np.concatenate(([float(initial_vwc)], vwc[:-1]))
     return {
         "strategy": strategy,
-        "plan": _plan_from_trajectory(dates, irrigation, vwc),
+        "plan": _plan_from_trajectory(dates, irrigation, vwc, vwc_before),
         "totalWaterMm": round(float(irrigation.sum()), 2),
         "irrigationDays": int(np.count_nonzero(irrigation > 0.01)),
         "minVwc": round(float(vwc.min()), 2),
@@ -76,7 +85,7 @@ def _optimised_schedule(dates, precip, net_radiation, params, initial_vwc, satur
     )
     irrigation = np.clip(result.x, 0.0, MAX_DAILY_IRRIGATION_MM)
     vwc = simulate_series(precip, net_radiation, params, initial_vwc, saturation, irrigation=irrigation)
-    return _summarize("optimised", dates, irrigation, vwc, wilting_point)
+    return _summarize("optimised", dates, irrigation, vwc, wilting_point, initial_vwc)
 
 
 def _fixed_interval_schedule(
@@ -86,7 +95,7 @@ def _fixed_interval_schedule(
     n = len(precip)
     irrigation = np.array([amount_mm if (t % interval_days == interval_days - 1) else 0.0 for t in range(n)])
     vwc = simulate_series(precip, net_radiation, params, initial_vwc, saturation, irrigation=irrigation)
-    return _summarize("fixedInterval", dates, irrigation, vwc, params["wilting_point"])
+    return _summarize("fixedInterval", dates, irrigation, vwc, params["wilting_point"], initial_vwc)
 
 
 def _threshold_schedule(
@@ -111,7 +120,7 @@ def _threshold_schedule(
         )
         vwc_series[t] = current
 
-    return _summarize("thresholdBased", dates, irrigation, vwc_series, wilting_point)
+    return _summarize("thresholdBased", dates, irrigation, vwc_series, wilting_point, initial_vwc)
 
 
 def _linear_programme_schedule(dates, precip, net_radiation, params, initial_vwc, saturation):
@@ -144,7 +153,7 @@ def _linear_programme_schedule(dates, precip, net_radiation, params, initial_vwc
 
     irrigation = np.clip(result.x, 0.0, MAX_DAILY_IRRIGATION_MM) if result.success else np.zeros(n)
     vwc = simulate_series(precip_arr, net_radiation_arr, params, initial_vwc, saturation, irrigation=irrigation)
-    return _summarize("linearProgramme", dates, irrigation, vwc, wilting_point)
+    return _summarize("linearProgramme", dates, irrigation, vwc, wilting_point, initial_vwc)
 
 
 def build_schedule(latitude, longitude, soil_type=None, land_cover=None, horizon_days=DEFAULT_HORIZON_DAYS):

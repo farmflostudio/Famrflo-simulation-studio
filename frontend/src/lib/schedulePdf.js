@@ -131,13 +131,14 @@ export function downloadSchedulePdf({ farm, schedule }) {
       theme: "striped",
       headStyles: { fillColor: BRAND_GREEN },
       styles: { fontSize: 9, cellPadding: 5 },
-      head: [["Date", "Irrigation (mm)", "Soil moisture before", "Soil moisture after"]],
-      body: rec.plan.map((entry) => [
-        formatDate(entry.date),
-        entry.recommendedMm.toFixed(1),
-        `${entry.vwcBeforeIrrigation.toFixed(1)}%`,
-        `${entry.predictedVwc.toFixed(1)}%`,
-      ]),
+      head: [["Date", "Irrigation (mm)", "Soil moisture"]],
+      body: rec.plan.map((entry) => {
+        const isIrrigationDay = entry.recommendedMm > 0.01;
+        const moisture = isIrrigationDay
+          ? `${entry.vwcBeforeIrrigation.toFixed(1)}% -> ${entry.predictedVwc.toFixed(1)}%`
+          : `${entry.predictedVwc.toFixed(1)}%`;
+        return [formatDate(entry.date), entry.recommendedMm.toFixed(1), moisture];
+      }),
     });
     y = doc.lastAutoTable.finalY + 20;
   }
